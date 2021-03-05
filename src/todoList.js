@@ -45,6 +45,9 @@ const eventHandler = (updateTodoItem, removeTodoItem) => {
     if (key !== 'Enter') {
       return;
     }
+    if (target.value === '') {
+      return;
+    }
     _changeToViewMode(target);
   };
 
@@ -111,7 +114,8 @@ const eventHandler = (updateTodoItem, removeTodoItem) => {
   };
 };
 
-const todoList = ($ulist, updateTodoItem, removeTodoItem) => {
+const todoList = (updateTodoItem, removeTodoItem) => {
+  const $ulist = document.getElementById('todo-list');
   const _eventHandler = eventHandler(updateTodoItem, removeTodoItem);
 
   const _createListItemTemplate = () => {
@@ -178,4 +182,4 @@ const todoList = ($ulist, updateTodoItem, removeTodoItem) => {
   };
 };
 
-export { todoList };
+export default todoList;

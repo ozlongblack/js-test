@@ -6,6 +6,9 @@ const eventHandler = (addItem) => {
     if (key !== 'Enter') {
       return;
     }
+    if (target.value === '') {
+      return;
+    }
 
     addItem(target.value.trim());
     target.value = '';
@@ -33,4 +36,4 @@ const todoInput = (addItem) => {
   };
 };
 
-export { todoInput };
+export default todoInput;

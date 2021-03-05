@@ -1,10 +1,9 @@
 import { generateKey } from './util.js';
 
-const $ulist = document.getElementById('todo-list');
+export const componentRoot = document.querySelector('.todoapp');
 
-const todoApp = (todoInput, todoList, todoStatus) => {
-  let _todoItems = new Map();
-
+const todoApp = (store, todoInput, todoList, todoStatus) => {
+  
   const _filterStatusPredicate = {
     //TODO sync with todoStatus.js/filters
     all: () => true,
@@ -23,41 +22,45 @@ const todoApp = (todoInput, todoList, todoStatus) => {
 
   const addTodoItem = (content, status = '') => {
     const todoItem = _createTodoItem(content, status);
-    _todoItems.set(todoItem.index, todoItem);
-
+    store.set(todoItem.index, todoItem);
     todoListHandler.addItem(todoItem);
-    todoStatusHandler.updateCount();
   };
 
   const removeTodoItem = ({ index }) => {
-    _todoItems.delete(index);
-    todoStatusHandler.updateCount();
+    store.delete(index);
   };
 
   const updateTodoItem = ({ index, content, status }) => {
-    const todoItem = _todoItems.get(index);
-    todoItem.content = content;
-    todoItem.status = status ?? '';
+    const todoItem = store.get(index);
+    const updatedItem = {
+      ...todoItem,
+      content,
+      status: status ?? '',
+    };
 
-    _todoItems.set(todoItem.index, todoItem);
+    store.set(updatedItem.index, updatedItem);
   };
 
   const setFilter = (filterType) => {
-    const filteredItems = Array.from(_todoItems.values()).filter(
+    const filteredItems = Array.from(store.values()).filter(
       _filterStatusPredicate[filterType]
     );
 
     todoListHandler.refresh(filteredItems);
-    todoStatusHandler.updateCount();
+    todoStatusHandler.updateCount(filteredItems.length);
   };
 
   const todoInputHandler = todoInput(addTodoItem);
-  const todoListHandler = todoList($ulist, updateTodoItem, removeTodoItem);
-  const todoStatusHandler = todoStatus($ulist, setFilter);
+  const todoListHandler = todoList(updateTodoItem, removeTodoItem);
+  const todoStatusHandler = todoStatus(setFilter);
 
   const init = () => {
-    todoListHandler.refresh(Array.from(_todoItems.values));
+    todoListHandler.refresh(Array.from(store.values()));
     todoInputHandler.focus();
+
+    componentRoot.addEventListener('store:get', event => todoStatusHandler.updateCount(event.detail.size));
+    componentRoot.addEventListener('store:set', event => todoStatusHandler.updateCount(event.detail.size));
+    componentRoot.addEventListener('store:delete', event => todoStatusHandler.updateCount(event.detail.size));
   };
 
   return {
@@ -65,4 +68,4 @@ const todoApp = (todoInput, todoList, todoStatus) => {
   };
 };
 
-export { todoApp };
+export default todoApp;

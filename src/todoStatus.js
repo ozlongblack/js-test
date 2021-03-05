@@ -1,6 +1,6 @@
-const filters = ['all', 'active', 'completed'];
+export const filters = ['all', 'active', 'completed'];
 
-const todoStatus = ($ulist, setFilter) => {
+const todoStatus = (setFilter) => {
   const $filter = document.querySelector('ul.filters');
   const $spanCount = document.querySelector('.todo-count > strong');
 
@@ -13,18 +13,17 @@ const todoStatus = ($ulist, setFilter) => {
 
     target.classList.add('selected');
     setFilter(filterType);
-    updateCount();
   };
 
   $filter.addEventListener('click', _selectFilter);
 
-  const updateCount = () => {
-    $spanCount.textContent = $ulist.querySelectorAll('li').length;
+  const updateCount = (size) => {
+    $spanCount.textContent = size;
   };
 
-  return {
-    updateCount,
-  };
+  return ({
+    updateCount
+  });
 };
 
-export { filters, todoStatus };
+export default todoStatus;
